@@ -30,7 +30,7 @@ def message_reply(Message):
     cursor.execute('SELECT * FROM Users')
     users = cursor.fetchall()
     print (users)
-    for i in plan.split(";"):
+    for i in plan.split("\n"):
 
         markup = types.InlineKeyboardMarkup()
         button1 = types.InlineKeyboardButton(i, callback_data= i)
@@ -38,6 +38,12 @@ def message_reply(Message):
         bot.send_message(Message.chat.id, i .format(Message.from_user), reply_markup=markup)
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
+    cursor.execute("SELECT  plan FROM users WHERE username = ?", (call.from_user.id, ))
+    plan = str(cursor.fetchall())
+    print(plan)
+    plan = plan[2:-3]
+    print(call.data)
+    print(plan)
 
     index = plan.find(str(call.data))
     if index != -1:
@@ -46,6 +52,7 @@ def callback_query(call):
         string_list[index] = "✅"
         plan = "".join(string_list)
         print (plan)
+        cursor.execute('UPDATE Users SET plan = ? WHERE username = ?', (plan, call.from_user.id))
     else:
         bot.answer_callback_query(call.id, "ds" )
 
