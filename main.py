@@ -38,7 +38,7 @@ def message_reply(Message):
         bot.send_message(Message.chat.id, i .format(Message.from_user), reply_markup=markup)
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
-    global plan
+
     index = plan.find(str(call.data))
     if index != -1:
         bot.answer_callback_query(call.id, call.data )
