@@ -3,6 +3,8 @@ import sqlite3
 import telebot
 from telebot import types
 global list
+global inp
+inp = "0"
 connection = sqlite3.connect('my_database.db', check_same_thread=False)
 cursor = connection.cursor()
 plan = []
@@ -17,25 +19,73 @@ score INTEGER
 ''')
 @bot.message_handler(commands=['start'])
 def start_message(message):
-    bot.send_message(message.chat.id,"Привет ✌️ ")
-    print(message.chat.id)
-    cursor.execute('INSERT INTO Users (username, plan, score) VALUES (?, ?, ?)', (int(message.chat.id), "q", 0))
-    connection.commit()
-#cursor.execute('INSERT INTO Users (username) VALUES (?)', (str(message.chat.id)))
-@bot.message_handler(content_types='text')
-def message_reply(Message):
-    global plan
-    plan = str(Message.text)
-    cursor.execute('UPDATE Users SET plan = ? WHERE username = ?', (plan, Message.chat.id))
-    cursor.execute('SELECT * FROM Users')
-    users = cursor.fetchall()
-    print (users)
-    for i in plan.split("\n"):
 
-        markup = types.InlineKeyboardMarkup()
-        button1 = types.InlineKeyboardButton(i, callback_data= i)
-        markup.add(button1)
-        bot.send_message(Message.chat.id, i .format(Message.from_user), reply_markup=markup)
+    print(message.chat.id)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    btn1 = types.KeyboardButton("план")
+    btn2 = types.KeyboardButton("счет")
+    btn3 = types.KeyboardButton("ввод план")
+    markup.add(btn1, btn2, btn3)
+    cursor.execute('INSERT INTO Users (username, plan, score) VALUES (?, ?, ?)', (int(message.chat.id), "", 0))
+    connection.commit()
+    bot.send_message(message.chat.id, "Привет ✌️ ", reply_markup = markup)
+#cursor.execute('INSERT INTO Users (username) VALUES (?)', (str(message.chat.id)))
+
+@bot.message_handler(content_types=['text'])
+def func(message):
+    global inp
+    if(message.text == "план"):
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton("счет")
+        btn3 = types.KeyboardButton("ввод план")
+        back = types.KeyboardButton("Вернуться в главное меню")
+        cursor.execute("SELECT  plan FROM users WHERE username = ?", (message.from_user.id,))
+        plan = str(cursor.fetchall())
+        plan = plan[2:-3]
+        print(plan)
+        bot.send_message(message.chat.id, text="вот ваш план" + ": " + plan[2:-3], reply_markup = markup)
+        for i in plan.split(";"):
+            markup = types.InlineKeyboardMarkup()
+            button1 = types.InlineKeyboardButton(i[2], callback_data=i)
+            markup.add(button1)
+            bot.send_message(message.chat.id, i.format(message.from_user), reply_markup=markup)
+        markup.add(btn1, btn3, back)
+        inp = "0"
+    elif(message.text == "счет"):
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton("план")
+        btn3 = types.KeyboardButton("ввод план")
+        back = types.KeyboardButton("Вернуться в главное меню")
+        cursor.execute("SELECT  score FROM users WHERE username = ?", (message.from_user.id,))
+        score = str(cursor.fetchall())
+        print(score)
+        bot.send_message(message.chat.id, text="вот ваш счет" + ": " + score[2:-3], reply_markup = markup)
+        markup.add(btn1, btn3, back)
+        inp = "0"
+    elif (message.text == "ввод план"):
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton("план")
+        btn2 = types.KeyboardButton("счет")
+        btn3 = types.KeyboardButton("ввод план")
+        markup.add(btn1, btn2, btn3)
+        inp = "1"
+        bot.send_message(message.chat.id, text="жду", reply_markup = markup)
+    elif inp == "1":
+        planin = str(message.text)
+        print(message)
+        cursor.execute('UPDATE Users SET plan = ? WHERE username = ?', (planin, message.from_user.id))
+        connection.commit()
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton("план")
+        btn2 = types.KeyboardButton("счет")
+        btn3 = types.KeyboardButton("ввод план")
+        inp = "0"
+        markup.add(btn1, btn2, btn3)
+        bot.send_message(message.chat.id, text="план введен!", reply_markup=markup)
+
+
+
+
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     cursor.execute("SELECT  plan FROM users WHERE username = ?", (call.from_user.id, ))
