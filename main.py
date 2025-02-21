@@ -45,7 +45,7 @@ def func(message):
         bot.send_message(message.chat.id, text="вот ваш план" + ": " + plan, reply_markup = markup)
         for i in plan.split(";"):
             markup = types.InlineKeyboardMarkup()
-            button1 = types.InlineKeyboardButton(i[2:], callback_data=i)
+            button1 = types.InlineKeyboardButton(i, callback_data=i)
             markup.add(button1)
             bot.send_message(message.chat.id, i.format(message.from_user), reply_markup=markup)
         markup.add(btn1, btn3, back)
@@ -71,7 +71,7 @@ def func(message):
         bot.send_message(message.chat.id, text="жду", reply_markup = markup)
     elif inp == message.from_user.id:
         planin = str(message.text)
-        print(planin)
+        print(planin+"1")
         cursor.execute('UPDATE Users SET plan = ? WHERE username = ?', (planin, message.from_user.id))
         connection.commit()
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -89,16 +89,15 @@ def func(message):
 def callback_query(call):
     cursor.execute("SELECT  plan FROM users WHERE username = ?", (call.from_user.id, ))
     plan = str(cursor.fetchall())
-    print(plan)
-    plan = plan[2:-3]
+    plan = plan[3:-4]
     print(call.data)
     print(plan)
 
     index = plan.find(str(call.data))
     if index != -1:
         bot.answer_callback_query(call.id, call.data )
-        string_list = list(plan)
-        string_list[index] = "✅"
+        string_list = plan
+        string_list = string_list[:index] +"✅"+ string_list[index:]
         plan = "".join(string_list)
         print (plan)
         cursor.execute('UPDATE Users SET plan = ? WHERE username = ?', (plan, call.from_user.id))
