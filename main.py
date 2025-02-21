@@ -26,9 +26,9 @@ def start_message(message):
     btn2 = types.KeyboardButton("счет")
     btn3 = types.KeyboardButton("ввод план")
     markup.add(btn1, btn2, btn3)
-    cursor.execute('INSERT INTO Users (username, plan, score) VALUES (?, ?, ?)', (int(message.chat.id), "", 0))
+    cursor.execute('INSERT INTO Users (username, plan, score) VALUES (?, ?, ?)', (int(message.chat.id), " ", 0))
     connection.commit()
-    bot.send_message(message.chat.id, "Привет ✌️ ", reply_markup = markup)
+    bot.send_message(message.chat.id, "здесь будет инструкция ", reply_markup = markup)
 #cursor.execute('INSERT INTO Users (username) VALUES (?)', (str(message.chat.id)))
 
 @bot.message_handler(content_types=['text'])
@@ -41,12 +41,11 @@ def func(message):
         back = types.KeyboardButton("Вернуться в главное меню")
         cursor.execute("SELECT  plan FROM users WHERE username = ?", (message.from_user.id,))
         plan = str(cursor.fetchall())
-        plan = plan[2:-3]
-        print(plan)
-        bot.send_message(message.chat.id, text="вот ваш план" + ": " + plan[2:-3], reply_markup = markup)
+        plan = plan[3:-4]
+        bot.send_message(message.chat.id, text="вот ваш план" + ": " + plan, reply_markup = markup)
         for i in plan.split(";"):
             markup = types.InlineKeyboardMarkup()
-            button1 = types.InlineKeyboardButton(i[2], callback_data=i)
+            button1 = types.InlineKeyboardButton(i[2:], callback_data=i)
             markup.add(button1)
             bot.send_message(message.chat.id, i.format(message.from_user), reply_markup=markup)
         markup.add(btn1, btn3, back)
@@ -68,11 +67,11 @@ def func(message):
         btn2 = types.KeyboardButton("счет")
         btn3 = types.KeyboardButton("ввод план")
         markup.add(btn1, btn2, btn3)
-        inp = "1"
+        inp = message.from_user.id
         bot.send_message(message.chat.id, text="жду", reply_markup = markup)
-    elif inp == "1":
+    elif inp == message.from_user.id:
         planin = str(message.text)
-        print(message)
+        print(planin)
         cursor.execute('UPDATE Users SET plan = ? WHERE username = ?', (planin, message.from_user.id))
         connection.commit()
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -103,6 +102,7 @@ def callback_query(call):
         plan = "".join(string_list)
         print (plan)
         cursor.execute('UPDATE Users SET plan = ? WHERE username = ?', (plan, call.from_user.id))
+        connection.commit()
     else:
         bot.answer_callback_query(call.id, "ds" )
 
