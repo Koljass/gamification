@@ -110,4 +110,4 @@ def callback_query(call):
 bot.polling(none_stop=True)
 
 connection.close()
-#kostik<33
+#kostik<3
