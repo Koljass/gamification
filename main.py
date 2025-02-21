@@ -36,20 +36,21 @@ def func(message):
             markup = types.InlineKeyboardMarkup()#for inline
             button1 = types.InlineKeyboardButton(i, callback_data=i)#output inline
             markup.add(button1)#show inline
-            bot.send_message(message.chat.id, i.format(message.from_user))#send text
+            bot.send_message(message.chat.id, i.format(message.from_user), reply_markup = markup)#send text
         inp = "0"#variable for input
     elif message.text == "счет":#score
-        cursor.execute("SELECT  score FROM users WHERE username = ?", (message.from_user.id,))#take score in db
-        score = str(cursor.fetchall())#take score in db
+        cursor.execute("SELECT  plan FROM users WHERE username = ?", (message.from_user.id,))#take score in db
+
+        score = str(cursor.fetchall()).count("✅")
         print(score)
-        bot.send_message(message.chat.id, text="вот ваш счет" + ": " + score[2:-3])#output score
+        bot.send_message(message.chat.id, text="вот ваш счет" + ": " + str(score))#output score
         inp = "0"#variable for input
     elif message.text == "ввод план":# input start plan
         inp = message.from_user.id#variable for input
         bot.send_message(message.chat.id, text="жду")#output info
     elif inp == message.from_user.id: # input plan
         planin = str(message.text)# message in "str"
-        print(planin+"1")
+        print(planin+"52")
         cursor.execute('UPDATE Users SET plan = ? WHERE username = ?', (planin, message.from_user.id))#save in db
         connection.commit()# save change
         inp = "0"#variable for input
@@ -63,10 +64,10 @@ def callback_query(call):
     cursor.execute("SELECT  plan FROM users WHERE username = ?", (call.from_user.id, ))
     plan = str(cursor.fetchall())
     plan = plan[3:-4]
-    print(call.data)
-    print(plan)
+    print(call.data+"66")
+    print(plan+"67")
     index = plan.find(str(call.data))
-    print(plan[index])
+    print(plan[index]+"69")
     if index != -1 and plan[index] != "✅" :
         bot.answer_callback_query(call.id, call.data )
         string_list = plan
@@ -76,7 +77,7 @@ def callback_query(call):
         cursor.execute('UPDATE Users SET plan = ? WHERE username = ?', (plan, call.from_user.id))
         connection.commit()
     else:
-        bot.answer_callback_query(call.id, "ds" )
+        bot.answer_callback_query(call.id, "задача выполнена" )
 
         
       
