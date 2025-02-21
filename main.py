@@ -2,7 +2,6 @@ from operator import index
 import sqlite3
 import telebot
 from telebot import types
-global list
 global inp
 inp = "0"
 connection = sqlite3.connect('my_database.db', check_same_thread=False)
@@ -40,8 +39,7 @@ def func(message):
         btn3 = types.KeyboardButton("ввод план")
         back = types.KeyboardButton("Вернуться в главное меню")
         cursor.execute("SELECT  plan FROM users WHERE username = ?", (message.from_user.id,))
-        plan = str(cursor.fetchall())
-        plan = plan[3:-4]
+        plan = str(cursor.fetchall())[3:-4]
         bot.send_message(message.chat.id, text="вот ваш план" + ": " + plan, reply_markup = markup)
         for i in plan.split(";"):
             markup = types.InlineKeyboardMarkup()
@@ -92,9 +90,9 @@ def callback_query(call):
     plan = plan[3:-4]
     print(call.data)
     print(plan)
-
     index = plan.find(str(call.data))
-    if index != -1:
+    print(plan[index])
+    if index != -1 and plan[index] != "✅" :
         bot.answer_callback_query(call.id, call.data )
         string_list = plan
         string_list = string_list[:index] +"✅"+ string_list[index:]
