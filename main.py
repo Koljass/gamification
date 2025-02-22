@@ -46,7 +46,7 @@ def func(message):
         score = int(scoremain) + int(scoreplan)
         print(score)
         bot.send_message(message.chat.id, text="вот ваш счет" + ": " + str(score))#output score
-        cursor.execute('UPDATE Users SET score = ? WHERE username = ?', (score, message.from_user.id))
+        cursor.execute('UPDATE Users SET score = ? WHERE username = ?', (score, message.from_user.id))#save in db
         connection.commit()
         inp = "0"#variable for input
     elif message.text == "ввод план":# input start plan
