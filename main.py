@@ -42,12 +42,11 @@ def func(message):
         cursor.execute("SELECT  plan FROM users WHERE username = ?", (message.from_user.id,))#take score in db
         scoreplan = int(str(cursor.fetchall()).count("✅"))
         cursor.execute("SELECT  score FROM users WHERE username = ?", (message.from_user.id,))
-        scoremain = cursor.fetchall()
-        print(scoremain)
+        scoremain = str(cursor.fetchall())[2:-3]
         score = int(scoremain) + int(scoreplan)
         print(score)
         bot.send_message(message.chat.id, text="вот ваш счет" + ": " + str(score))#output score
-        cursor.execute('UPDATE Users SET score = ? WHERE username = ?', (score, call.from_user.id))
+        cursor.execute('UPDATE Users SET score = ? WHERE username = ?', (score, message.from_user.id))
         connection.commit()
         inp = "0"#variable for input
     elif message.text == "ввод план":# input start plan
@@ -90,8 +89,8 @@ bot.polling(none_stop=True)
 
 connection.close()
 """
-tz: Task completion series
-    count plan
+tz: Task completion series 
+    count plan +
     # = series +(n+1)
     * = presentation +5
     - = plan +0.5
