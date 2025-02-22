@@ -84,6 +84,12 @@ def callback_query(call):
 bot.polling(none_stop=True)
 
 connection.close()
-#kostik<3
 """
-frekkrof"""
+tz: Task completion series
+    count plan
+    # = series +(n+1)
+    * = presentation +5
+    - = plan +0.5
+
+"""
+#kostik<33
