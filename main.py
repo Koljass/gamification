@@ -94,6 +94,10 @@ tz: Task completion series
     # = series +(n+1)
     * = presentation +5
     - = plan +0.5
+    
+    shop:
+    
+    random
 
 """
 #kostik<33
