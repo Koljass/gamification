@@ -4,7 +4,7 @@ from telebot import types
 global inp#variable for input
 connection = sqlite3.connect('my_database.db', check_same_thread=False)#connect
 cursor = connection.cursor()
-token='7896437955:AAF6meLEqWoFPg6dLm2wKtpkidCcBXKSKas'#token tg
+token='token'#token tg
 bot=telebot.TeleBot(token)#for telebot
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS Users (
