@@ -4,7 +4,7 @@ from telebot import types
 global inp#variable for input
 connection = sqlite3.connect('my_database.db', check_same_thread=False)#connect
 cursor = connection.cursor()
-token='token'#token tg
+token='7896437955:AAF6meLEqWoFPg6dLm2wKtpkidCcBXKSKas'#token tg
 bot=telebot.TeleBot(token)#for telebot
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS Users (
@@ -28,16 +28,23 @@ def start_message(message):
 @bot.message_handler(content_types=['text'])
 def func(message):
     global inp#variable for input
+
+
     if message.text == "план":#plan
         cursor.execute("SELECT  plan FROM users WHERE username = ?", (message.from_user.id,))#take plan in db
         plan = str(cursor.fetchall())[3:-4]#take plan in db and delete extra
-        bot.send_message(message.chat.id, text="вот ваш план" + ": " + plan)#output plan
+        #output plan
+        markup = types.InlineKeyboardMarkup()#for inline
+
         for i in plan.split(";"):#cycle for do inline but
-            markup = types.InlineKeyboardMarkup()#for inline
-            button1 = types.InlineKeyboardButton(i, callback_data=i)#output inline
-            markup.add(button1)#show inline
-            bot.send_message(message.chat.id, i.format(message.from_user), reply_markup = markup)#send text
+            button1= types.InlineKeyboardButton(i, callback_data=i)#output inline
+            markup.add(button1)
         inp = "0"#variable for input
+       #show inline
+        print(markup)
+        bot.send_message(message.chat.id, i.format(message.from_user), reply_markup = markup)#send text
+
+
     elif message.text == "счет":#score
         cursor.execute("SELECT  plan FROM users WHERE username = ?", (message.from_user.id,))#take score in db
         scoreplan = int(str(cursor.fetchall()).count("✅"))
